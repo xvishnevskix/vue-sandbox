@@ -1,19 +1,15 @@
 <template>
-  <div>
-    <h3>Список постов</h3>
-    <post-item v-for="post in posts" :post="post"/>
-  </div>
+  <button class="btn">
+      <slot></slot>
+  </button>
 </template>
 
 <script>
-import PostItem from '@/components/PostItem'
+
 export default {
-  components: {PostItem},
+  name: 'my-button',
   props: {
-    posts: {
-      type: Array,
-      required: true,
-    }
+
   },
   data() {
     return {
@@ -27,6 +23,11 @@ export default {
 </script>
 
 <style>
-
-
+.btn {
+  align-self: flex-end;
+  padding: 15px 20px;
+  color: teal;
+  border: 1px solid teal;
+  background: #fdfdfd;
+}
 </style>
