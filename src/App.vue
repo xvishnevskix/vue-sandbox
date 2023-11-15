@@ -12,7 +12,8 @@
   </my-dialog>
   <post-list @delete="deletePost" :posts="sortedAndSearchedPosts" v-if="isPostsLoading !== true"/>
   <div v-else>Идёт загрузка...</div>
-  <my-pagination @changePage="onChangePage" :page="page" :totalPages="totalPages"></my-pagination>
+  <div ref="observer" class="observer"></div>
+<!--  <my-pagination @changePage="onChangePage" :page="page" :totalPages="totalPages"></my-pagination>-->
 </div>
 </template>
 
@@ -66,10 +67,10 @@ import MyPagination from '@/components/UI/Pagination'
       showDialog() {
         this.dialogVisible = true
       },
-      onChangePage(numberPage) {
-        this.page = numberPage
-        this.fetchPosts()
-      },
+      // onChangePage(numberPage) {
+      //   this.page = numberPage
+      //   this.fetchPosts()
+      // },
       async fetchPosts() {
         try {
           this.isPostsLoading = true
@@ -86,10 +87,38 @@ import MyPagination from '@/components/UI/Pagination'
         } finally {
           this.isPostsLoading = false
         }
+      },
+      async loadMorePosts() {
+        try {
+          this.isPostsLoading = true
+          const response = await axios.get('https://jsonplaceholder.typicode.com/posts', {
+            params: {
+              _page: this.page,
+              _limit: this.limit,
+            }
+          })
+          this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit)
+          this.posts = [...this.posts, ...response.data]
+        } catch (e) {
+          alert('Ошибка')
+        } finally {
+          this.isPostsLoading = false
+        }
       }
     },
     mounted() {
         this.fetchPosts();
+
+
+      var options = {
+        rootMargin: "0px",
+        threshold: 1.0,
+      };
+      var callback = function (entries, observer) {
+        /* Content excerpted, show below */
+      };
+      var observer = new IntersectionObserver(callback, options);
+      observer.observe(this.$refs.observer)
     },
     computed: {
       sortedPosts() {
@@ -102,9 +131,9 @@ import MyPagination from '@/components/UI/Pagination'
       }
     },
     watch: {
-      page() {
-        this.fetchPosts()
-      }
+      // page() {
+      //   this.fetchPosts()
+      // }
     }
   }
 </script>
@@ -122,6 +151,10 @@ import MyPagination from '@/components/UI/Pagination'
       margin: 15px 0;
       display: flex;
       justify-content: space-between;
+    }
+    .observer {
+      height: 30px;
+      background: green;
     }
 
 </style>
