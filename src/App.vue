@@ -12,6 +12,7 @@
   </my-dialog>
   <post-list @delete="deletePost" :posts="sortedAndSearchedPosts" v-if="isPostsLoading !== true"/>
   <div v-else>Идёт загрузка...</div>
+  <my-pagination @changePage="onChangePage" :page="page" :totalPages="totalPages"></my-pagination>
 </div>
 </template>
 
@@ -24,9 +25,11 @@ import MyButton from '@/components/UI/MyButton'
 import axios from 'axios'
 import MySelect from '@/components/UI/MySelect'
 import MyInput from '@/components/UI/MyInput'
+import MyPagination from '@/components/UI/Pagination'
 
   export default {
     components: {
+      MyPagination,
       MyInput,
       MyButton,
       MyDialog,
@@ -63,6 +66,10 @@ import MyInput from '@/components/UI/MyInput'
       showDialog() {
         this.dialogVisible = true
       },
+      onChangePage(numberPage) {
+        this.page = numberPage
+        this.fetchPosts()
+      },
       async fetchPosts() {
         try {
           this.isPostsLoading = true
@@ -72,7 +79,7 @@ import MyInput from '@/components/UI/MyInput'
               _limit: this.limit,
             }
           })
-          this.totalPages = Math.ceil(response.data.headers['x-total-count'] / this.limit)
+          this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit)
           this.posts = response.data
         } catch (e) {
           alert('Ошибка')
@@ -95,7 +102,9 @@ import MyInput from '@/components/UI/MyInput'
       }
     },
     watch: {
-
+      page() {
+        this.fetchPosts()
+      }
     }
   }
 </script>
