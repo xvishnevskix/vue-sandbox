@@ -38,6 +38,9 @@ import MyPagination from '@/components/UI/Pagination'
       PostForm,
       MySelect,
     },
+
+
+
     data() {
       return {
         posts: [],
@@ -54,16 +57,21 @@ import MyPagination from '@/components/UI/Pagination'
         totalPages: 0,
       }
     },
+
+
+
     methods: {
       createPost(post) {
           this.posts.push(post)
           this.dialogVisible = false
       },
+
       deletePost(id) {
         this.posts = this.posts.filter((prop) => {
         return prop.id !== id
         })
       },
+
       showDialog() {
         this.dialogVisible = true
       },
@@ -71,6 +79,7 @@ import MyPagination from '@/components/UI/Pagination'
       //   this.page = numberPage
       //   this.fetchPosts()
       // },
+
       async fetchPosts() {
         try {
           this.isPostsLoading = true
@@ -88,9 +97,9 @@ import MyPagination from '@/components/UI/Pagination'
           this.isPostsLoading = false
         }
       },
+
       async loadMorePosts() {
         try {
-          this.isPostsLoading = true
           const response = await axios.get('https://jsonplaceholder.typicode.com/posts', {
             params: {
               _page: this.page,
@@ -101,25 +110,32 @@ import MyPagination from '@/components/UI/Pagination'
           this.posts = [...this.posts, ...response.data]
         } catch (e) {
           alert('Ошибка')
-        } finally {
-          this.isPostsLoading = false
         }
       }
     },
+
+
+
     mounted() {
         this.fetchPosts();
 
-
-      var options = {
+      const options = {
         rootMargin: "0px",
         threshold: 1.0,
       };
-      var callback = function (entries, observer) {
-        /* Content excerpted, show below */
+      const callback = (entries, observer) => {
+        if (entries[0].isIntersecting && this.page <= this.totalPages) {
+          this.loadMorePosts()
+          this.page += 1
+        }
       };
-      var observer = new IntersectionObserver(callback, options);
+      const observer = new IntersectionObserver(callback, options);
       observer.observe(this.$refs.observer)
     },
+
+
+
+
     computed: {
       sortedPosts() {
       return [...this.posts].sort((post1,post2) =>
