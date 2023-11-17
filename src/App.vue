@@ -1,7 +1,7 @@
 <template>
   <div class="app">
     <navbar></navbar>
-    <router-view>
+    <router-view style="padding: 30px">
 
     </router-view>
   </div>
@@ -25,6 +25,6 @@ export default {
   box-sizing: border-box;
 }
 .app {
-  padding: 20px;
+
 }
 </style>
